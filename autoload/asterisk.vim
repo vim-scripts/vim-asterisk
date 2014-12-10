@@ -84,9 +84,10 @@ function! s:convert_2_word_pattern_4_visual(pattern, config) abort
     let type = (a:config.direction is# s:DIRECTION.forward ? '/' : '?')
     let [pre, post] = ['', '']
     if a:config.is_whole
+        let [head_pos, tail_pos] = s:sort_pos([getpos('.')[1:2], getpos('v')[1:2]])
         let head = matchstr(text, '^.')
         let is_head_multibyte = 1 < len(head)
-        let [l, col] = getpos("'<")[1 : 2]
+        let [l, col] = head_pos
         let line = getline(l)
         let before = line[: col - 2]
         let outer = matchstr(before, '.$')
@@ -96,7 +97,7 @@ function! s:convert_2_word_pattern_4_visual(pattern, config) abort
         endif
         let tail = matchstr(text, '.$')
         let is_tail_multibyte = 1 < len(tail)
-        let [l, col] = getpos("'>")[1 : 2]
+        let [l, col] = tail_pos
         let col += len(tail) - 1
         let line = getline(l)
         let after = line[col :]
@@ -159,9 +160,10 @@ endfunction
 " @return selected text
 function! s:get_selected_text(...) abort
     let mode = get(a:, 1, mode(1))
-    let end_curswant = winsaveview().curswant + 1
-    let current_pos = [line('.'), end_curswant < 0 ? s:INT.MAX : end_curswant ]
-    let other_end_pos = [line('v'), col('v')]
+    let end_col = winsaveview().curswant is s:INT.MAX ?
+    \   s:INT.MAX : s:get_multibyte_aware_col('.')
+    let current_pos = [line('.'), end_col]
+    let other_end_pos = [line('v'), s:get_multibyte_aware_col('v')]
     let [begin, end] = s:sort_pos([current_pos, other_end_pos])
     if mode ==# "\<C-v>"
         let [min_c, max_c] = s:sort_num([begin[1], end[1]])
@@ -176,10 +178,20 @@ function! s:get_selected_text(...) abort
         else
             let lines = [getline(begin[0])[begin[1]-1 :]]
             \         + (end[0] - begin[0] < 2 ? [] : getline(begin[0]+1, end[0]-1))
-            \         + [getline(end[0])[: end[1]]]
+            \         + [getline(end[0])[: end[1]-1]]
         endif
     endif
     return join(lines, "\n") . (mode ==# "V" ? "\n" : '')
+endfunction
+
+" @return multibyte aware column number for select
+function! s:get_multibyte_aware_col(pos) abort
+    let [pos, other] = [a:pos, a:pos is '.' ? 'v' : '.']
+    let c = col(pos)
+    let d = s:compare_pos(getpos(pos)[1:2], getpos(other)[1:2]) > 0
+    \   ? len(matchstr(getline(pos), '.', c - 1)) - 1
+    \   : 0
+    return c + d
 endfunction
 
 " Helper:
