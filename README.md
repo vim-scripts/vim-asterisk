@@ -1,5 +1,8 @@
 vim-asterisk: * -Improved
 ========================
+[![](https://travis-ci.org/haya14busa/vim-asterisk.svg?branch=master)](https://travis-ci.org/haya14busa/vim-asterisk)
+[![](https://ci.appveyor.com/api/projects/status/uurxg9ips6h2cyd3/branch/master?svg=true)](https://ci.appveyor.com/project/haya14busa/vim-asterisk/branch/master)
+[![](https://drone.io/github.com/haya14busa/vim-asterisk/status.png)](https://drone.io/github.com/haya14busa/vim-asterisk/latest)
 [![](https://img.shields.io/github/release/haya14busa/vim-asterisk.svg)](https://github.com/haya14busa/vim-asterisk/releases)
 [![](http://img.shields.io/github/issues/haya14busa/vim-asterisk.svg)](https://github.com/haya14busa/vim-asterisk/issues)
 [![](http://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -13,11 +16,22 @@ asterisk.vim provides improved * motions.
 ### 1. stay star motions (z prefixed mappings)
 z star motions doesn't move your cursor.
 
+![](https://raw.githubusercontent.com/haya14busa/i/master/vim-asterisk/asterisk_z_star.gif)
+
 ### 2. visual star motions
 Search selected text.
 
+![](https://raw.githubusercontent.com/haya14busa/i/master/vim-asterisk/asterisk_visual_star.gif)
+
 ### 3. Use smartcase unlike default one
 Default behavior, which see ignorecase and not smartcase, is not intuitive.
+
+### 4. Keep cursor position across matches
+Keeping cursor position while itering over matches is handy for refactoring.
+
+![](https://raw.githubusercontent.com/haya14busa/i/master/vim-asterisk/asterisk_keeppos.gif)
+
+Tips: `nmap § ` will allow you to use asterisk as multiple cursors in a vim way
 
 Installation
 ------------
@@ -57,6 +71,11 @@ map *  <Plug>(asterisk-z*)
 map #  <Plug>(asterisk-z#)
 map g* <Plug>(asterisk-gz*)
 map g# <Plug>(asterisk-gz#)
+```
+
+To enable keepCursor feature:
+```vim
+let g:asterisk#keeppos = 1
 ```
 
 Special thanks

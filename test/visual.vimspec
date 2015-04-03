@@ -1,0 +1,58 @@
+scriptencoding utf-8
+Describe visual
+
+    Before all
+        let lines = [
+        \     '1.asterisk 2.asterisk 3.asterisk'
+        \   , '4.Asterisk 5.AsteRisK 6.Asterisk'
+        \   , ''
+        \   , '7.アスタリスク 8.アスタリスクです 9.アスタリスク?'
+        \ ]
+        call g:Add_lines(lines)
+    End
+
+    Before each
+        :1
+        normal! 2l
+        let @/ = ''
+    End
+
+    After all
+        :1,$ delete
+    End
+
+    Context *
+        It search forward with \<\>
+            normal viw*
+            Assert Equals(@/, '\V\<asterisk\>')
+        End
+        It search forward only with \<
+            normal v2l*
+            Assert Equals(@/, '\V\<ast')
+        End
+        It search forward only with \>
+            normal 2lve*
+            Assert Equals(@/, '\Vterisk\>')
+        End
+    End
+
+    Context multibyte *
+        It handle left keyword
+            normal 3jv2l*
+            Assert Equals(@/, '\V\<アスタ')
+        End
+        It handle right keyword
+            normal 3jev2h*
+            Assert Equals(@/, '\Vリスク\>')
+        End
+        It handle left and right keyword
+            normal 3jve*
+            Assert Equals(@/, '\V\<アスタリスク\>')
+        End
+        It is irrelabant with keyword
+            normal 3jlv2l*
+            Assert Equals(@/, '\Vスタリ')
+        End
+    End
+
+End
